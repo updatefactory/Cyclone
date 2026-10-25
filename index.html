@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07131f">
+<title>Bay of Bengal Cyclone Track by Priyabrata | IMD Outlook 24 Oct 2026</title>
+<meta name="description" content="Forecast track, timeline and affected areas for the Bay of Bengal depression expected to become a very severe cyclonic storm and cross the Andhra Pradesh coast on 28 Oct 2026.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+
+<style>
+:root{
+  --bg:#07131f;
+  --surface:#0d2133;
+  --surface-2:#12304a;
+  --line:#1d4260;
+  --text:#e9f1f7;
+  --muted:#93aabd;
+  --accent:#7fe0d0;
+  --accent-ink:#04201c;
+  --c-d:#7cc8e8;
+  --c-dd:#3fb6a8;
+  --c-cs:#f2c14e;
+  --c-scs:#f08c3a;
+  --c-vscs:#e5484d;
+  --radius:18px;
+  --head-h:76px;
+  --nav-h:48px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  overflow-x:hidden;margin:0;background:var(--bg);color:var(--text);
+  font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.55;
+  background-image:
+    radial-gradient(900px 500px at 85% -10%, rgba(63,182,168,.14), transparent 60%),
+    radial-gradient(700px 500px at -10% 30%, rgba(229,72,77,.08), transparent 60%);
+  background-attachment:fixed;
+}
+h1,h2,h3{font-family:"Bricolage Grotesque","Figtree",sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* ---------- Header ---------- */
+.site-head{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(7,19,31,.88);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top);
+}
+.head-row{
+  max-width:1120px;margin:0 auto;
+  min-height:var(--head-h);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.logo{
+  flex:none;width:46px;height:46px;border-radius:16px;
+  background:linear-gradient(145deg,#16405f,#0b2236);
+  border:1px solid var(--line);
+  display:grid;place-items:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.logo svg{width:32px;height:32px}
+.brand{min-width:0;flex:1}
+.brand h1{font-size:1.02rem;line-height:1.2;font-weight:800}
+.brand p{margin:2px 0 0;font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.watch-pill{
+  display:none;flex:none;align-items:center;gap:8px;
+  padding:10px 14px;border-radius:999px;
+  background:rgba(229,72,77,.14);border:1px solid rgba(229,72,77,.55);
+  font-weight:700;font-size:.85rem;color:#ffb3b5;
+}
+.watch-pill i{width:9px;height:9px;border-radius:50%;background:var(--c-vscs);box-shadow:0 0 0 0 rgba(229,72,77,.7);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px rgba(229,72,77,0)}100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}}
+
+.nav{
+  max-width:1120px;margin:0 auto;padding:0 16px 10px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+}
+.nav button{
+  height:48px;border-radius:12px;padding:0 4px;
+  background:var(--surface);border:1px solid var(--line);
+  font-weight:800;font-size:.74rem;cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.nav button{gap:5px}
+.nav button.play{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nav button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+#playIcon{font-size:.7rem}
+
+/* ---------- Layout ---------- */
+main{max-width:1120px;margin:0 auto;padding:12px 16px 40px}
+section{scroll-margin-top:calc(var(--head-h) + var(--nav-h) + 30px);margin-bottom:34px}
+.sec-title{font-size:1.45rem;font-weight:800;margin-bottom:4px}
+.sec-sub{margin:0 0 16px;color:var(--muted);font-size:.95rem;max-width:62ch}
+
+/* ---------- Summary ---------- */
+.alert{
+  border-radius:var(--radius);padding:18px;
+  background:linear-gradient(135deg,#3a1520 0%,#1d1a2e 60%,#0d2133 100%);
+  border:1px solid rgba(229,72,77,.45);
+  margin-bottom:14px;
+}
+.alert h2{font-size:1.25rem;font-weight:800;margin-bottom:6px}
+.alert p{margin:0;color:#d9c4cb;max-width:70ch}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stat b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;line-height:1.15;font-weight:800}
+.stat span{display:block;margin-top:4px;font-size:.82rem;color:var(--muted)}
+.stat.hot b{color:#ff8e91}
+
+/* ---------- Map ---------- */
+.map-card{
+  width:100vw;position:relative;left:50%;margin-left:-50vw;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:0;border-left:0;border-right:0;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.map-wrap{position:relative}
+#map{width:100%;aspect-ratio:1/1;height:auto;max-height:90vh;background:#0b1b2a}
+.hud{
+  position:absolute;left:8px;top:8px;z-index:500;
+  background:rgba(7,19,31,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--line);border-radius:8px;padding:5px 8px;max-width:62%;
+  pointer-events:none;
+}
+.hud .lv{font-size:.56rem;font-weight:800;letter-spacing:.06em;color:#7fe0d0;margin-bottom:2px}
+.hud .t{font-weight:700;font-size:.74rem;line-height:1.3}
+.hud .c{display:flex;align-items:center;gap:5px;font-size:.66rem;color:var(--muted);margin-top:1px;line-height:1.3}
+.hud .c i{flex:none;width:8px;height:8px;border-radius:2px;background:var(--c-d)}
+.map-controls{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px;
+  border-top:1px solid var(--line);background:var(--surface);
+}
+.btn{
+  min-height:56px;padding:0 14px;border-radius:14px;
+  border:2px solid var(--line);background:var(--surface-2);
+  font-weight:800;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+#playIcon{font-size:.95rem}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.legend{
+  display:flex;flex-wrap:wrap;gap:8px 14px;padding:12px 14px 14px;font-size:.78rem;color:var(--muted);
+}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:20px;height:6px;border-radius:3px;display:inline-block}
+.legend i.dot{width:10px;height:10px;border-radius:50%}
+.legend i.belt{background:rgba(229,72,77,.45);height:10px}
+
+/* Leaflet tweaks */
+.leaflet-popup-content-wrapper{border-radius:14px;font-family:"Figtree",sans-serif}
+.leaflet-popup-content{margin:12px 14px;font-size:.9rem;line-height:1.45}
+.pop h4{margin:0 0 4px;font-family:"Bricolage Grotesque",sans-serif;font-size:1.05rem}
+.pop .tag{display:inline-block;padding:2px 9px;border-radius:999px;color:#10151a;font-weight:700;font-size:.78rem;margin-bottom:6px}
+.pop div.r{display:flex;justify-content:space-between;gap:14px;border-top:1px solid #e5e9ed;padding:4px 0}
+.pop div.r b{font-weight:600}
+.city-label{
+  background:rgba(7,19,31,.8);color:#fff;border:0;border-radius:6px;padding:1px 5px;
+  font-weight:600;font-size:.62rem;line-height:1.3;box-shadow:none;
+}
+.z-low .city-label.minor{display:none}
+.city-label:before{display:none}
+.wp{
+  width:26px;height:26px;border-radius:6px;
+  display:grid;place-items:center;
+  font-size:.7rem;font-weight:800;color:#0b1520;
+  border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.eye{width:64px;height:64px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6))}
+.eye svg{width:100%;height:100%;animation:spin 5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Square zoom buttons, bottom right */
+.leaflet-bottom.leaflet-right .leaflet-control-zoom{margin:0 10px 26px 0;border:0;display:flex;flex-direction:column;gap:6px;box-shadow:none}
+.leaflet-control-zoom a{
+  width:46px!important;height:46px!important;line-height:44px!important;
+  font-size:26px!important;font-weight:700;border-radius:8px!important;
+  background:#0d2133!important;color:#fff!important;border:2px solid #7fe0d0!important;
+}
+.leaflet-control-zoom a:hover{background:#12304a!important}
+.leaflet-bar a.leaflet-disabled{opacity:.4}
+.sq{width:18px;height:18px;border-radius:3px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.6)}
+.legend i.sqk{width:11px;height:11px;border-radius:2px}
+
+/* Affected areas panel */
+.panel{
+  position:absolute;left:10px;right:10px;top:10px;z-index:1100;
+  max-height:62%;overflow:auto;
+  background:rgba(7,19,31,.96);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px 14px;box-shadow:0 12px 36px rgba(0,0,0,.55);
+}
+.panel[hidden]{display:none}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.panel-h h3{font-size:1rem;font-weight:800}
+.panel-x{width:44px;height:44px;border-radius:8px;border:2px solid var(--line);background:var(--surface-2);font-size:1.2rem;font-weight:800;cursor:pointer}
+.pg{margin:10px 0 4px;font-weight:800;font-size:.85rem;display:flex;align-items:center;gap:8px}
+.pg i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.pc{display:flex;flex-wrap:wrap;gap:5px}
+.pc span{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:.78rem}
+.panel .pn{margin:10px 0 0;font-size:.75rem;color:var(--muted)}
+
+/* ---------- Timeline ---------- */
+.tl{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tl li{
+  display:grid;grid-template-columns:8px 1fr;gap:0;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  cursor:pointer;
+}
+.tl li:active{background:var(--surface-2)}
+.tl .bar{background:var(--col)}
+.tl .body{padding:13px 14px}
+.tl .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tl .when{font-weight:700}
+.tl .cat{font-weight:700;font-size:.85rem;color:var(--col)}
+.tl .meta{margin-top:5px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.88rem;color:var(--muted)}
+.tl .meta b{color:var(--text);font-weight:600}
+.tl li.landfall{border-color:rgba(229,72,77,.7);background:linear-gradient(135deg,rgba(229,72,77,.12),var(--surface))}
+.note{font-size:.85rem;color:var(--muted);margin-top:12px;max-width:70ch}
+
+/* ---------- Areas ---------- */
+.area-grid{display:grid;gap:12px}
+.area{
+  background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--col);
+  border-radius:16px;padding:15px 16px;
+}
+.area h3{font-size:1.1rem;font-weight:800;margin-bottom:2px}
+.area .lvl{font-size:.82rem;font-weight:700;color:var(--col);margin-bottom:8px;display:block}
+.area p{margin:0 0 8px;color:#c4d3df;font-size:.93rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.82rem}
+
+/* ---------- Safety ---------- */
+.two{display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.card ul{margin:0;padding-left:20px;color:#c4d3df}
+.card li{margin:5px 0}
+.src{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;margin-top:26px}
+.src a{color:var(--accent)}
+
+footer{max-width:1120px;margin:0 auto;padding:0 16px calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.8rem}
+
+/* ---------- Larger screens ---------- */
+@media(min-width:620px){.watch-pill{display:flex}}
+@media(min-width:720px){
+  :root{--head-h:84px}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .map-controls{grid-template-columns:repeat(4,1fr)}
+  .area-grid{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr 1fr}
+  .tl{grid-template-columns:1fr 1fr}
+  .brand h1{font-size:1.4rem}
+  .nav{max-width:640px;margin-left:auto;margin-right:auto}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .eye svg,.watch-pill i{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="head-row">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" stroke="#7fe0d0" stroke-width="3.2" stroke-linecap="round">
+        <path d="M24 24c0-6 5-9 10-8M24 24c6 0 9 5 8 10M24 24c0 6-5 9-10 8M24 24c-6 0-9-5-8-10"/>
+        <circle cx="24" cy="24" r="2.6" fill="#7fe0d0" stroke="none"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <h1>Bay of Bengal Cyclone Track</h1>
+      <p>By Priyabrata &middot; IMD outlook, 24 Oct 2026, 2100 UTC</p>
+    </div>
+    <div class="watch-pill" role="status"><i></i><span>Pre-Cyclone Watch</span></div>
+  </div>
+  <nav class="nav" aria-label="Map controls">
+    <button class="play" id="playBtn" type="button"><span id="playIcon">&#9654;</span><span id="playTxt">Play</span></button>
+    <button id="liveBtn" type="button">Live</button>
+    <button id="coneBtn" type="button" aria-pressed="true">Spread</button>
+    <button id="landBtn" type="button">Landfall</button>
+    <button id="areasBtn" type="button" aria-pressed="false">Areas</button>
+  </nav>
+</header>
+
+<main>
+
+  <section id="map-sec">
+    <div class="map-card">
+      <div class="map-wrap">
+        <div id="map" role="application" aria-label="Cyclone track map"></div>
+        <div class="panel" id="panel" hidden role="dialog" aria-label="Affected areas">
+          <div class="panel-h"><h3>Affected areas (IMD district alerts)</h3><button class="panel-x" id="panelX" type="button" aria-label="Close">&times;</button></div>
+          <div id="panelBody"></div>
+        </div>
+        <div class="hud" id="hud" aria-live="polite">
+          <div class="lv" id="hudMode">LIVE NOW</div>
+          <div class="t" id="hudTime">24 Oct, 05:00 IST</div>
+          <div class="c"><i id="hudDot"></i><span id="hudCat">Depression</span></div>
+        </div>
+      </div>
+      <div class="legend" aria-label="Map legend">
+        <span><i style="background:var(--c-d)"></i>Depression (ଅବଦାବ)</span>
+        <span><i style="background:var(--c-dd)"></i>Deep Depression (ଗଭୀର ଅବଦାବ)</span>
+        <span><i style="background:var(--c-cs)"></i>Cyclonic Storm (ବାତ୍ୟା)</span>
+        <span><i style="background:var(--c-scs)"></i>Severe CS (ପ୍ରବଳ ବାତ୍ୟା)</span>
+        <span><i style="background:var(--c-vscs)"></i>Very Severe CS (ଅତି ପ୍ରବଳ ବାତ୍ୟା)</span>
+        <span><i class="belt"></i>Landfall zone</span>
+        <span><i class="sqk" style="background:#e5484d"></i>Red alert district</span>
+        <span><i class="sqk" style="background:#f08c3a"></i>Orange alert district</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="forecast-sec">
+    <h2 class="sec-title">Forecast timeline</h2>
+    <p class="sec-sub">Positions and intensity from the IMD outlook. Times shown in IST (UTC+5:30) with the original UTC time. Tap a card to see it on the map.</p>
+    <ol class="tl" id="timeline"></ol>
+    <p class="note">The wind column of the source table was scrambled in the pasted text. The wind values for the last three rows are matched to categories by the intensity stated in the bulletin text, so check them against the official PDF.</p>
+  </section>
+
+  <section id="areas-sec">
+    <h2 class="sec-title">Affected areas</h2>
+    <p class="sec-sub">District alerts as reported from IMD warnings on 25 Oct 2026, plus the landfall zone from the IMD outlook. Use the Areas button on the map to see them plotted.</p>
+    <div class="area-grid">
+      <article class="area" style="--col:var(--c-vscs)">
+        <h3>Landfall zone</h3>
+        <span class="lvl">Between Bapatla and Visakhapatnam, including Yanam</span>
+        <p>Very severe cyclonic storm crossing around 0600 UTC (11:30 IST) on 28 Oct, with winds of 115&ndash;125 km/h gusting to 140 km/h.</p>
+        <div class="chips"><span>Bapatla</span><span>Machilipatnam</span><span>Yanam</span><span>Kakinada</span><span>Visakhapatnam</span></div>
+      </article>
+      <article class="area" style="--col:var(--c-vscs)">
+        <h3>Andhra Pradesh: red alert</h3>
+        <span class="lvl">Extremely heavy rain. Visakhapatnam and Anakapalli on 27 Oct; the rest on 28 Oct</span>
+        <div class="chips"><span>Visakhapatnam</span><span>Anakapalli</span><span>Alluri Sitarama Raju</span><span>Kakinada</span><span>East Godavari</span><span>Konaseema</span><span>West Godavari</span></div>
+      </article>
+      <article class="area" style="--col:var(--c-scs)">
+        <h3>Andhra Pradesh: orange alert</h3>
+        <span class="lvl">27 and 28 Oct</span>
+        <div class="chips"><span>Srikakulam</span><span>Parvathipuram-Manyam</span><span>Vizianagaram</span><span>Eluru</span><span>Krishna</span></div>
+      </article>
+      <article class="area" style="--col:var(--c-vscs)">
+        <h3>Odisha: red alert</h3>
+        <span class="lvl">28 Oct</span>
+        <div class="chips"><span>Ganjam</span><span>Gajapati</span><span>Rayagada</span><span>Koraput</span><span>Malkangiri</span></div>
+      </article>
+      <article class="area" style="--col:var(--c-scs)">
+        <h3>Odisha: orange alert</h3>
+        <span class="lvl">28 Oct</span>
+        <div class="chips"><span>Mayurbhanj</span><span>Keonjhar</span><span>Balasore</span><span>Bhadrak</span><span>Kendrapara</span><span>Jagatsinghpur</span><span>Jajpur</span><span>Cuttack</span><span>Puri</span><span>Nayagarh</span><span>Dhenkanal</span><span>Khordha</span><span>Kandhamal</span><span>Kalahandi</span><span>Nabarangpur</span></div>
+      </article>
+      <article class="area" style="--col:var(--c-d)">
+        <h3>Sea areas</h3>
+        <span class="lvl">Rough to very rough seas</span>
+        <p>East-central and west-central Bay of Bengal along the track. Fishermen should stay out of the sea until the system has passed.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="safety-sec">
+    <h2 class="sec-title">What to do now</h2>
+    <p class="sec-sub">Landfall is about three days away. This is the time to prepare, not wait.</p>
+    <div class="two">
+      <div class="card">
+        <h3>Before landfall</h3>
+        <ul>
+          <li>Check IMD and district administration alerts every few hours.</li>
+          <li>Charge phones and power banks; keep a torch and radio ready.</li>
+          <li>Store drinking water, dry food and essential medicines.</li>
+          <li>Secure loose roofing, signboards and outdoor items.</li>
+          <li>Keep documents in a waterproof bag.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>If you live on the coast</h3>
+        <ul>
+          <li>Know your nearest cyclone shelter and route.</li>
+          <li>Move out early when authorities ask for evacuation.</li>
+          <li>Boats should be brought ashore and tied down.</li>
+          <li>Stay away from beaches, rivers and low-lying areas.</li>
+          <li>After landfall, avoid fallen power lines and flooded roads.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="src">
+      Source: Special Tropical Weather Outlook, RSMC Tropical Cyclones New Delhi (IMD), issued 2100 UTC, 24 Oct 2026, based on 1800 UTC observations. Forecasts change often; always use the latest bulletin at
+      <a href="https://mausam.imd.gov.in" target="_blank" rel="noopener">mausam.imd.gov.in</a>.
+    </p>
+  </section>
+</main>
+
+<footer>
+  Created by Priyabrata. This page is an independent visualisation, not an official warning. Map data &copy; OpenStreetMap contributors. Uncertainty circles and landfall belt are illustrative, not IMD products.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function(){
+  /* ---------- Data from the IMD bulletin ---------- */
+  var CATS = {
+    D:   {name:'Depression', odia:'ଅବଦାବ',             color:'#7cc8e8'},
+    DD:  {name:'Deep Depression', odia:'ଗଭୀର ଅବଦାବ',         color:'#3fb6a8'},
+    CS:  {name:'Cyclonic Storm', odia:'ବାତ୍ୟା',          color:'#f2c14e'},
+    SCS: {name:'Severe Cyclonic Storm', odia:'ପ୍ରବଳ ବାତ୍ୟା',   color:'#f08c3a'},
+    VSCS:{name:'Very Severe Cyclonic Storm', odia:'ଅତି ପ୍ରବଳ ବାତ୍ୟା',color:'#e5484d'}
+  };
+  var PTS = [
+    {utc:'2026-10-24T23:30:00Z', lat:15.5, lon:91.0, cat:'D',   w:'40\u201350',  g:60},
+    {utc:'2026-10-25T11:30:00Z', lat:14.8, lon:90.9, cat:'D',   w:'45\u201355',  g:65},
+    {utc:'2026-10-25T23:30:00Z', lat:14.2, lon:90.0, cat:'DD',  w:'55\u201365',  g:75},
+    {utc:'2026-10-26T11:30:00Z', lat:14.3, lon:88.2, cat:'CS',  w:'70\u201380',  g:90},
+    {utc:'2026-10-26T23:30:00Z', lat:14.8, lon:86.5, cat:'CS',  w:'80\u201390',  g:100},
+    {utc:'2026-10-27T11:30:00Z', lat:15.3, lon:84.8, cat:'SCS', w:'90\u2013100', g:110},
+    {utc:'2026-10-27T23:30:00Z', lat:16.0, lon:83.3, cat:'VSCS',w:'100\u2013110',g:120},
+    {utc:'2026-10-28T11:30:00Z', lat:17.0, lon:82.0, cat:'VSCS',w:'115\u2013125',g:140},
+    {utc:'2026-10-28T23:30:00Z', lat:18.2, lon:80.9, cat:'CS',  w:'85\u201395',  g:105}
+  ];
+  PTS.forEach(function(p){p.t=new Date(p.utc).getTime();});
+  var RADIUS_KM = [30,50,80,110,140,170,200,230,260];
+
+  var LANDFALL = {lat:16.73, lon:82.35, utc:'2026-10-28T06:00:00Z'};
+  var BELT = [[15.90,80.47],[16.17,81.14],[16.73,82.22],[16.96,82.24],[17.69,83.22]];
+
+  var CITIES = [
+    {n:'Visakhapatnam',lat:17.69,lon:83.22,l:'high',d:'right',major:1},
+    {n:'Kakinada',lat:16.96,lon:82.24,l:'high',d:'right'},
+    {n:'Yanam',lat:16.73,lon:82.22,l:'high',d:'left'},
+    {n:'Machilipatnam',lat:16.17,lon:81.14,l:'high',d:'left'},
+    {n:'Bapatla',lat:15.90,lon:80.47,l:'high',d:'left',major:1},
+    {n:'Srikakulam',lat:18.30,lon:83.90,l:'watch',d:'right'},
+    {n:'Berhampur',lat:19.31,lon:84.79,l:'watch',d:'right'},
+    {n:'Vijayawada',lat:16.51,lon:80.65,l:'inland',d:'left'},
+    {n:'Khammam',lat:17.25,lon:80.15,l:'inland',d:'left'},
+    {n:'Sri Vijaya Puram',lat:11.67,lon:92.75,l:'ref',d:'right',major:1}
+  ];
+  var LVL = {high:'#e5484d',watch:'#f08c3a',inland:'#f2c14e',ref:'#93aabd'};
+
+  function nm(c){return c.name+' ('+c.odia+')';}
+
+  /* ---------- Helpers ---------- */
+  function fmt(ts, tz){
+    var d = new Date(ts);
+    var day = d.toLocaleString('en-GB',{day:'2-digit',timeZone:tz});
+    var mon = d.toLocaleString('en-GB',{month:'short',timeZone:tz});
+    var tm  = d.toLocaleString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:tz});
+    return day+' '+mon+', '+tm;
+  }
+  var IST = function(ts){return fmt(ts,'Asia/Kolkata')+' IST';};
+  var UTC = function(ts){return fmt(ts,'UTC')+' UTC';};
+  function catAt(ts){
+    var c = PTS[0];
+    for(var i=0;i<PTS.length;i++){ if(PTS[i].t<=ts) c=PTS[i]; }
+    return c;
+  }
+
+  /* ---------- Map ---------- */
+  var map = L.map('map',{zoomControl:false, worldCopyJump:false, tap:true});
+
+  var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  var dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    subdomains:'abcd', maxZoom:19,
+    attribution:'&copy; OpenStreetMap contributors &copy; CARTO'
+  });
+  L.control.layers({'Street map (OSM)':osm,'Dark map':dark},null,{position:'topright'}).addTo(map);
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
+
+  // Landfall belt
+  var belt = L.polyline(BELT,{color:'#e5484d',weight:16,opacity:.38,lineCap:'round',lineJoin:'round'}).addTo(map);
+  belt.bindTooltip('Landfall zone: Bapatla to Visakhapatnam (approx.)',{sticky:true});
+
+  // Uncertainty circles
+  var coneGroup = L.layerGroup().addTo(map);
+  PTS.forEach(function(p,i){
+    L.circle([p.lat,p.lon],{
+      radius:RADIUS_KM[i]*1000, stroke:false, fillColor:CATS[p.cat].color, fillOpacity:.13, interactive:false
+    }).addTo(coneGroup);
+  });
+
+  // Track segments coloured by intensity
+  for(var i=0;i<PTS.length-1;i++){
+    L.polyline([[PTS[i].lat,PTS[i].lon],[PTS[i+1].lat,PTS[i+1].lon]],{
+      color:'#06121d', weight:9, opacity:.55, lineCap:'round'
+    }).addTo(map);
+    L.polyline([[PTS[i].lat,PTS[i].lon],[PTS[i+1].lat,PTS[i+1].lon]],{
+      color:CATS[PTS[i+1].cat].color, weight:5, opacity:1, lineCap:'round'
+    }).addTo(map);
+  }
+
+  // City markers
+  CITIES.forEach(function(c){
+    L.circleMarker([c.lat,c.lon],{radius:5,color:'#fff',weight:2,fillColor:LVL[c.l],fillOpacity:1})
+      .bindTooltip(c.n,{permanent:true,direction:c.d,offset:[c.d==='left'?-6:6,0],className:'city-label'+(c.major?'':' minor')})
+      .addTo(map);
+  });
+  function updLabels(){ document.getElementById('map').classList.toggle('z-low', map.getZoom()<7); }
+  map.on('zoomend',updLabels);
+
+  // Waypoint markers
+  var wpMarkers = [];
+  function popupHtml(p,i){
+    var cat = CATS[p.cat];
+    return '<div class="pop"><h4>'+IST(p.t)+'</h4>'+
+      '<span class="tag" style="background:'+cat.color+'">'+nm(cat)+'</span>'+
+      '<div class="r"><span>UTC</span><b>'+UTC(p.t)+'</b></div>'+
+      '<div class="r"><span>Position</span><b>'+p.lat.toFixed(1)+'\u00b0N, '+p.lon.toFixed(1)+'\u00b0E</b></div>'+
+      '<div class="r"><span>Sustained wind</span><b>'+p.w+' km/h</b></div>'+
+      '<div class="r"><span>Gusts</span><b>up to '+p.g+' km/h</b></div></div>';
+  }
+  PTS.forEach(function(p,i){
+    var day = new Date(p.t + 5.5*3600*1000).getUTCDate();
+    var icon = L.divIcon({
+      className:'', iconSize:[26,26], iconAnchor:[13,13],
+      html:'<div class="wp" style="background:'+CATS[p.cat].color+'">'+day+'</div>'
+    });
+    var m = L.marker([p.lat,p.lon],{icon:icon,title:IST(p.t),zIndexOffset:200}).addTo(map).bindPopup(popupHtml(p,i));
+    wpMarkers.push(m);
+  });
+
+  // Landfall marker
+  var landIcon = L.divIcon({
+    className:'', iconSize:[44,44], iconAnchor:[22,22],
+    html:'<div style="width:44px;height:44px;border-radius:50%;background:#e5484d;border:3px solid #fff;display:grid;place-items:center;box-shadow:0 4px 16px rgba(0,0,0,.6)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18c3 0 3-2 6-2s3 2 6 2 3-2 6-2M12 3v9M8 8l4 4 4-4"/></svg></div>'
+  });
+  var landMarker = L.marker([LANDFALL.lat,LANDFALL.lon],{icon:landIcon,zIndexOffset:900}).addTo(map).bindPopup(
+    '<div class="pop"><h4>Expected landfall</h4><span class="tag" style="background:#e5484d;color:#fff">Very Severe Cyclonic Storm ('+CATS.VSCS.odia+')</span>'+
+    '<div class="r"><span>Time</span><b>'+IST(new Date(LANDFALL.utc).getTime())+'</b></div>'+
+    '<div class="r"><span>UTC</span><b>'+UTC(new Date(LANDFALL.utc).getTime())+'</b></div>'+
+    '<div class="r"><span>Where</span><b>Between Bapatla and Visakhapatnam (approx. near Yanam)</b></div>'+
+    '<div class="r"><span>Wind</span><b>115\u2013125 km/h, gusts 140 km/h</b></div></div>'
+  );
+
+  // Moving cyclone icon
+  var eyeIcon = L.divIcon({
+    className:'', iconSize:[64,64], iconAnchor:[32,32],
+    html:'<div class="eye"><svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" fill="rgba(255,255,255,.18)"/><g stroke="#fff" stroke-width="5" stroke-linecap="round"><path d="M32 32c0-10 8-15 17-13"/><path d="M32 32c10 0 15 8 13 17"/><path d="M32 32c0 10-8 15-17 13"/><path d="M32 32c-10 0-15-8-13-17"/></g><circle cx="32" cy="32" r="5" fill="#e5484d" stroke="#fff" stroke-width="2"/></svg></div>'
+  });
+  var eye = L.marker([PTS[0].lat,PTS[0].lon],{icon:eyeIcon,zIndexOffset:1000,interactive:false}).addTo(map);
+
+  function fitAll(){
+    var b = L.latLngBounds(PTS.map(function(p){return [p.lat,p.lon];}));
+    b.extend([15.5,80.2]); b.extend([19.4,85]);
+    map.fitBounds(b,{padding:[24,24]});
+  }
+  fitAll(); updLabels();
+
+  /* ---------- HUD ---------- */
+  var hudTime = document.getElementById('hudTime'),
+      hudCat  = document.getElementById('hudCat'),
+      hudDot  = document.getElementById('hudDot');
+  function setHud(ts){
+    var p = catAt(ts), c = CATS[p.cat];
+    hudTime.textContent = IST(ts);
+    hudCat.textContent = nm(c);
+    hudDot.style.background = c.color;
+  }
+
+  /* ---------- Animation ---------- */
+  var T0 = PTS[0].t, T1 = PTS[PTS.length-1].t;
+  var DURATION = 14000, progress = 0, playing = false, last = 0, raf = null;
+  function posAt(ts){
+    for(var i=0;i<PTS.length-1;i++){
+      if(ts>=PTS[i].t && ts<=PTS[i+1].t){
+        var f=(ts-PTS[i].t)/(PTS[i+1].t-PTS[i].t);
+        return [PTS[i].lat+(PTS[i+1].lat-PTS[i].lat)*f, PTS[i].lon+(PTS[i+1].lon-PTS[i].lon)*f];
+      }
+    }
+    var e = ts<T0?PTS[0]:PTS[PTS.length-1]; return [e.lat,e.lon];
+  }
+  function render(){
+    var ts = T0 + (T1-T0)*progress;
+    eye.setLatLng(posAt(ts));
+    setHud(ts);
+    if(!live) hudMode.textContent='FORECAST REPLAY';
+  }
+  function tick(now){
+    if(!playing) return;
+    progress += (now-last)/DURATION; last = now;
+    if(progress>=1){ progress=1; render(); stop(); return; }
+    render(); raf = requestAnimationFrame(tick);
+  }
+  var hudMode = document.getElementById('hudMode');
+  var live = true;
+  function nowProgress(){
+    var n = Math.min(Math.max(Date.now(),T0),T1);
+    return (n-T0)/(T1-T0);
+  }
+  function showLive(){
+    live = true; progress = nowProgress();
+    var n = Date.now();
+    eye.setLatLng(posAt(Math.min(Math.max(n,T0),T1)));
+    setHud(n);
+    hudMode.textContent = n<T0 ? 'LIVE (FORECAST NOT STARTED)' : (n>T1 ? 'FORECAST ENDED' : 'LIVE NOW');
+  }
+  var playBtn = document.getElementById('playBtn'),
+      playTxt = document.getElementById('playTxt'),
+      playIcon= document.getElementById('playIcon');
+  function start(){
+    live=false; progress=0;
+    playing=true; last=performance.now();
+    playTxt.textContent='Pause';
+    playIcon.innerHTML='&#10074;&#10074;';
+    raf=requestAnimationFrame(tick);
+  }
+  function stop(){
+    playing=false; cancelAnimationFrame(raf);
+    playTxt.textContent = progress>=1 ? 'Replay' : 'Play';
+    playIcon.innerHTML='&#9654;';
+  }
+  playBtn.addEventListener('click',function(){
+    if(playing){stop();} else {fitAll(); start();}
+  });
+  document.getElementById('liveBtn').addEventListener('click',function(){
+    stop(); playTxt.textContent='Play'; showLive();
+    map.flyTo(eye.getLatLng(),6,{duration:1});
+  });
+  showLive();
+  setInterval(function(){ if(live && !playing) showLive(); },60000);
+  var coneBtn = document.getElementById('coneBtn');
+  coneBtn.addEventListener('click',function(){
+    var on = coneBtn.getAttribute('aria-pressed')==='true';
+    if(on){map.removeLayer(coneGroup);} else {coneGroup.addTo(map);}
+    coneBtn.setAttribute('aria-pressed', String(!on));
+  });
+  document.getElementById('landBtn').addEventListener('click',function(){
+    map.flyTo([LANDFALL.lat,LANDFALL.lon],8,{duration:1.2});
+    setTimeout(function(){landMarker.openPopup();},1300);
+  });
+
+
+  /* ---------- Affected districts (IMD district alerts, reported 25 Oct 2026) ---------- */
+  var AREAS = [
+    {n:'Visakhapatnam',s:'AP',lvl:'red',d:'27 Oct',lat:17.69,lon:83.22},
+    {n:'Anakapalli',s:'AP',lvl:'red',d:'27 & 28 Oct',lat:17.69,lon:83.00},
+    {n:'Alluri Sitarama Raju',s:'AP',lvl:'red',d:'28 Oct',lat:18.08,lon:82.67},
+    {n:'Kakinada',s:'AP',lvl:'red',d:'28 Oct',lat:16.96,lon:82.24},
+    {n:'East Godavari',s:'AP',lvl:'red',d:'28 Oct',lat:17.00,lon:81.78},
+    {n:'Konaseema',s:'AP',lvl:'red',d:'28 Oct',lat:16.58,lon:82.00},
+    {n:'West Godavari',s:'AP',lvl:'red',d:'28 Oct',lat:16.54,lon:81.52},
+    {n:'Srikakulam',s:'AP',lvl:'orange',d:'27 & 28 Oct',lat:18.30,lon:83.90},
+    {n:'Parvathipuram-Manyam',s:'AP',lvl:'orange',d:'27 & 28 Oct',lat:18.78,lon:83.43},
+    {n:'Vizianagaram',s:'AP',lvl:'orange',d:'27 & 28 Oct',lat:18.11,lon:83.40},
+    {n:'Eluru',s:'AP',lvl:'orange',d:'27 & 28 Oct',lat:16.71,lon:81.10},
+    {n:'Krishna',s:'AP',lvl:'orange',d:'27 & 28 Oct',lat:16.17,lon:81.14},
+    {n:'Ganjam',s:'OD',lvl:'red',d:'28 Oct',lat:19.36,lon:84.98},
+    {n:'Gajapati',s:'OD',lvl:'red',d:'28 Oct',lat:18.78,lon:84.09},
+    {n:'Rayagada',s:'OD',lvl:'red',d:'28 Oct',lat:19.17,lon:83.42},
+    {n:'Koraput',s:'OD',lvl:'red',d:'28 Oct',lat:18.81,lon:82.71},
+    {n:'Malkangiri',s:'OD',lvl:'red',d:'28 Oct',lat:18.35,lon:81.88},
+    {n:'Mayurbhanj',s:'OD',lvl:'orange',d:'28 Oct',lat:21.93,lon:86.72},
+    {n:'Keonjhar',s:'OD',lvl:'orange',d:'28 Oct',lat:21.63,lon:85.58},
+    {n:'Balasore',s:'OD',lvl:'orange',d:'28 Oct',lat:21.49,lon:86.93},
+    {n:'Bhadrak',s:'OD',lvl:'orange',d:'28 Oct',lat:21.06,lon:86.52},
+    {n:'Kendrapara',s:'OD',lvl:'orange',d:'28 Oct',lat:20.50,lon:86.42},
+    {n:'Jagatsinghpur',s:'OD',lvl:'orange',d:'28 Oct',lat:20.25,lon:86.17},
+    {n:'Jajpur',s:'OD',lvl:'orange',d:'28 Oct',lat:20.85,lon:86.33},
+    {n:'Cuttack',s:'OD',lvl:'orange',d:'28 Oct',lat:20.46,lon:85.88},
+    {n:'Puri',s:'OD',lvl:'orange',d:'28 Oct',lat:19.81,lon:85.83},
+    {n:'Nayagarh',s:'OD',lvl:'orange',d:'28 Oct',lat:20.13,lon:85.10},
+    {n:'Dhenkanal',s:'OD',lvl:'orange',d:'28 Oct',lat:20.66,lon:85.60},
+    {n:'Khordha',s:'OD',lvl:'orange',d:'28 Oct',lat:20.18,lon:85.62},
+    {n:'Kandhamal',s:'OD',lvl:'orange',d:'28 Oct',lat:20.47,lon:84.23},
+    {n:'Kalahandi',s:'OD',lvl:'orange',d:'28 Oct',lat:19.91,lon:83.17},
+    {n:'Nabarangpur',s:'OD',lvl:'orange',d:'28 Oct',lat:19.23,lon:82.55}
+  ];
+  var ALV = {red:'#e5484d',orange:'#f08c3a'};
+  var STATE = {AP:'Andhra Pradesh',OD:'Odisha'};
+  var areaGroup = L.layerGroup();
+  AREAS.forEach(function(a){
+    var icon = L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],html:'<div class="sq" style="background:'+ALV[a.lvl]+'"></div>'});
+    L.marker([a.lat,a.lon],{icon:icon,title:a.n,zIndexOffset:100}).bindPopup(
+      '<div class="pop"><h4>'+a.n+'</h4><span class="tag" style="background:'+ALV[a.lvl]+';color:#fff">'+(a.lvl==='red'?'Red':'Orange')+' alert</span>'+
+      '<div class="r"><span>State</span><b>'+STATE[a.s]+'</b></div><div class="r"><span>Alert date</span><b>'+a.d+'</b></div></div>'
+    ).addTo(areaGroup);
+  });
+  var panel = document.getElementById('panel'), hudEl = document.getElementById('hud'), areasBtn = document.getElementById('areasBtn');
+  (function buildPanel(){
+    var html='';
+    [['AP','red'],['AP','orange'],['OD','red'],['OD','orange']].forEach(function(g){
+      var list = AREAS.filter(function(a){return a.s===g[0]&&a.lvl===g[1];});
+      html += '<div class="pg"><i style="background:'+ALV[g[1]]+'"></i>'+STATE[g[0]]+': '+(g[1]==='red'?'Red':'Orange')+' alert ('+list.length+')</div><div class="pc">'+
+        list.map(function(a){return '<span>'+a.n+'</span>';}).join('')+'</div>';
+    });
+    html += '<p class="pn">District alerts as reported from IMD warnings on 25 Oct 2026. Alerts change often; check mausam.imd.gov.in for the latest.</p>';
+    document.getElementById('panelBody').innerHTML = html;
+  })();
+  function setAreas(on){
+    if(on){ areaGroup.addTo(map); } else { map.removeLayer(areaGroup); }
+    panel.hidden = !on; hudEl.style.display = on ? 'none' : '';
+    areasBtn.setAttribute('aria-pressed', String(on));
+    if(on){
+      var b = L.latLngBounds(AREAS.map(function(a){return [a.lat,a.lon];}));
+      b.extend([15.8,80.4]);
+      map.fitBounds(b,{paddingTopLeft:[16,panel.offsetHeight+24],paddingBottomRight:[70,24]});
+    }
+  }
+  areasBtn.addEventListener('click',function(){ setAreas(areasBtn.getAttribute('aria-pressed')!=='true'); });
+  document.getElementById('panelX').addEventListener('click',function(){ setAreas(false); });
+
+  /* ---------- Timeline ---------- */
+  var tl = document.getElementById('timeline');
+  PTS.forEach(function(p,i){
+    var c = CATS[p.cat];
+    var li = document.createElement('li');
+    li.tabIndex = 0;
+    li.setAttribute('role','button');
+    if(i===7) li.className='landfall';
+    li.style.setProperty('--col',c.color);
+    li.innerHTML =
+      '<div class="bar"></div><div class="body">'+
+        '<div class="top"><span class="when">'+IST(p.t)+'</span><span class="cat">'+c.name+'</span></div>'+
+        '<div class="meta">'+
+          '<span>'+UTC(p.t)+'</span>'+
+          '<span>Wind <b>'+p.w+' km/h</b></span>'+
+          '<span>Gusts <b>'+p.g+' km/h</b></span>'+
+          '<span><b>'+p.lat.toFixed(1)+'\u00b0N, '+p.lon.toFixed(1)+'\u00b0E</b></span>'+
+        '</div>'+
+      '</div>';
+    function go(){
+      stop();
+      document.getElementById('map-sec').scrollIntoView({behavior:'smooth'});
+      setTimeout(function(){
+        map.flyTo([p.lat,p.lon],7,{duration:1});
+        setTimeout(function(){wpMarkers[i].openPopup();},1050);
+      },350);
+    }
+    li.addEventListener('click',go);
+    li.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+    tl.appendChild(li);
+  });
+
+  window.addEventListener('load',function(){setTimeout(function(){map.invalidateSize();fitAll();},200);});
+  window.addEventListener('resize',function(){map.invalidateSize();});
+})();
+</script>
+</body>
+</html>
